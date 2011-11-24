@@ -37,7 +37,7 @@ class ObjectBuilder extends AbstractObjectBuilder
      */
     public function getPackage()
     {
-        return parent::getPackage() . ".Om";
+        return parent::getPackage() . ".Base";
     }
 
     public function getNamespace()
