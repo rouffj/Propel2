@@ -141,7 +141,7 @@ class ArchivableBehavior extends Behavior
             return $this->getParameter('archive_class');
         }
 
-        return $builder->getNewStubObjectBuilder($this->getArchiveTable())->getClassname();
+        return $builder->getClassnameFromBuilder($builder->getNewStubObjectBuilder($this->getArchiveTable()));
     }
 
     public function getArchiveTableQueryName($builder)
@@ -150,7 +150,7 @@ class ArchivableBehavior extends Behavior
             return $this->getParameter('archive_class') . 'Query';
         }
 
-        return $builder->getNewStubQueryBuilder($this->getArchiveTable())->getClassname();
+        return $builder->getClassnameFromBuilder($builder->getNewStubQueryBuilder($this->getArchiveTable()));
     }
 
     public function hasArchiveClass()

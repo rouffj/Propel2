@@ -53,8 +53,8 @@ class SortableBehaviorPeerBuilderModifier
     protected function setBuilder($builder)
     {
         $this->builder = $builder;
-        $this->objectClassname = $builder->getStubObjectBuilder()->getClassname();
-        $this->peerClassname = $builder->getStubPeerBuilder()->getClassname();
+        $this->objectClassname = $builder->getObjectClassname();
+        $this->peerClassname = $builder->getPeerClassname();
     }
 
     public function staticAttributes($builder)

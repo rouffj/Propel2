@@ -194,6 +194,23 @@ abstract class AbstractOMBuilder extends DataModelBuilder
     }
 
     /**
+     * this decare le class use and get the correct name to use (short classname or Alias)
+     * @param $builder
+     */
+    public function getClassnameFromBuilder($builder)
+    {
+        $namespace = $builder->getNamespace();
+        $class = $builder->getClassname();
+
+        if (isset($this->declaredClasses[$namespace])
+           && isset($this->declaredClasses[$namespace][$class])) {
+            return $this->declaredClasses[$namespace][$class];
+        }
+
+        return $this->declareClassNamespace($class, $namespace, true);
+    }
+
+    /**
      * Declare a class to be use and return it's name or it's alias
      *
      * @param string $class the class name
@@ -203,16 +220,21 @@ abstract class AbstractOMBuilder extends DataModelBuilder
      */
     public function declareClassNamespace($class, $namespace = '', $alias = false)
     {
+        //check if the class is already
         if (isset($this->declaredClasses[$namespace])
            && isset($this->declaredClasses[$namespace][$class])) {
             return $this->declaredClasses[$namespace][$class];
         }
+
+        $forcedAlias = $this->needAliasForClassname($class, $namespace);
         if (false === $alias || true === $alias || null === $alias) {
             $aliasWanted = $class;
+            $alias = $alias || $forcedAlias;
         } else {
             $aliasWanted = $alias;
+            $forcedAlias = false;
         }
-        if (!isset($this->declaredShortClassesOrAlias[$aliasWanted])) {
+        if (!$forcedAlias && !isset($this->declaredShortClassesOrAlias[$aliasWanted])) {
             if (!isset($this->declaredClasses[$namespace])) {
                 $this->declaredClasses[$namespace] = array();
             }
@@ -222,11 +244,25 @@ abstract class AbstractOMBuilder extends DataModelBuilder
             return $aliasWanted;
         }
         // we have a duplicate class and asked for an automatic Alias
-        if (true === $alias) {
-            return $this->declareClassNamespace($class, $namespace, 'Base' . $class);
+        if (false !== $alias) {
+            if ('\\Base' == substr($namespace, -5)) {
+                return $this->declareClassNamespace($class, $namespace, 'Base' . $class);
+            } else {
+                return $this->declareClassNamespace($class, $namespace, 'Child' . $class);
+            }
         }
          throw new Exception(sprintf('The class %s duplicate the class %s and can\'t be used without alias', $namespace . '\\' . $class,
              $this->declaredShortClassesOrAlias[$aliasWanted]));
+    }
+
+    protected function needAliasForClassname($class, $namespace)
+    {
+        if ($namespace == $this->getNamespace()) {
+            return false;
+        }
+        if (str_replace('\\Base', '', $namespace) == str_replace('\\Base', '', $this->getNamespace())) {
+            return true;
+        }
     }
 
     public function declareClassNamespacePrefix($class, $namespace = '', $aliasPrefix = false)
@@ -316,7 +352,7 @@ abstract class AbstractOMBuilder extends DataModelBuilder
      * @see        StubPeerBuilder::getClassname()
      */
     public function getPeerClassname() {
-        return $this->getStubPeerBuilder()->getClassname();
+        return $this->getClassnameFromBuilder($this->getStubPeerBuilder());
     }
 
     /**
@@ -327,7 +363,7 @@ abstract class AbstractOMBuilder extends DataModelBuilder
      * @see        StubQueryBuilder::getClassname()
      */
     public function getQueryClassname() {
-        return $this->getStubQueryBuilder()->getClassname();
+        return $this->getClassnameFromBuilder($this->getStubQueryBuilder());
     }
 
     /**
@@ -338,7 +374,7 @@ abstract class AbstractOMBuilder extends DataModelBuilder
      * @see        StubPeerBuilder::getClassname()
      */
     public function getObjectClassname() {
-        return $this->getStubObjectBuilder()->getClassname();
+        return $this->getClassnameFromBuilder($this->getStubObjectBuilder());
     }
 
     /**
