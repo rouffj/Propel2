@@ -219,9 +219,7 @@ if (\$this->isInTree()) {
         $this->addGetBranch($script);
         $this->addGetAncestors($script);
 
-        $this->builder->declareClass(
-            $builder->getStubObjectBuilder()->getFullyQualifiedClassname()
-        );
+        $this->builder->declareClassFromBuilder($builder->getStubObjectBuilder(), 'Child');
         $this->addAddChild($script);
         $this->addInsertAsFirstChildOf($script);
         $this->addInsertAsLastChildOf($script);
