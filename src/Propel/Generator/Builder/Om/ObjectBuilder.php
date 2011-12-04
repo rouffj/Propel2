@@ -1262,7 +1262,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * Set the value of [$clo] column.
      * ".$col->getDescription()."
      * @param      ".$col->getPhpType()." \$v new value
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      */";
     }
 
@@ -1479,7 +1479,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * ".$col->getDescription()."
      * @param      mixed \$v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as NULL.
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      */";
     }
 
@@ -1548,7 +1548,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * @param      ConnectionInterface An optional ConnectionInterface connection to use for fetching this lazy-loaded column.";
         }
         $script .= "
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      */
     $visibility function add$singularPhpName(\$value";
         if ($col->isLazyLoad()) $script .= ", ConnectionInterface \$con = null";
@@ -1586,7 +1586,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * @param      ConnectionInterface An optional ConnectionInterface connection to use for fetching this lazy-loaded column.";
         }
         $script .= "
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      */
     $visibility function remove$singularPhpName(\$value";
         if ($col->isLazyLoad()) $script .= ", ConnectionInterface \$con = null";
@@ -1683,7 +1683,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
      * ".$col->getDescription()."
      * @param      boolean|integer|string \$v The new value
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      */";
     }
 
@@ -2091,7 +2091,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
         $fks = $this->getTable()->getForeignKeys();
         $referrers = $this->getTable()->getReferrers();
         $hasFks = count($fks) > 0 || count($referrers) > 0;
-        $objectClassName = $this->getObjectClassname();
+        $objectClassName = $this->getClassname();
         $pkGetter = $this->getTable()->hasCompositePrimaryKey() ? 'serialize($this->getPrimaryKey())' : '$this->getPrimaryKey()';
         $script .= "
     /**
@@ -2983,7 +2983,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * Declares an association between this object and a $className object.
      *
      * @param      $className \$v
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      * @throws     PropelException
      */
     public function set".$this->getFKPhpNameAffix($fk, $plural = false)."($className \$v = null)
@@ -3160,7 +3160,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * overridden in <code>".$table->getPhpName()."</code>.";
         }
         $script .= "
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      * @throws     PropelException
      */
     public function set".$methodAffix."Key(\$key)
@@ -3410,7 +3410,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
             return;
         }
         \$this->$collName = new ObjectCollection();
-        \$this->{$collName}->setModel('" . $this->getClassnameFromBuilder($this->getNewStubObjectBuilder($refFK->getTable())) . "');
+        \$this->{$collName}->setModel('" . $this->getClassnameFromBuilder($this->getNewStubObjectBuilder($refFK->getTable()), true) . "');
     }
 ";
     } // addRefererInit()
@@ -3426,9 +3426,11 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
         $joinedTableObjectBuilder = $this->getNewObjectBuilder($refFK->getTable());
         $className = $joinedTableObjectBuilder->getObjectClassname();
 
+        /* FIXME : use the right methode to get the base Classes
         if ($tblFK->getChildrenColumn()) {
             $className = 'Base' . $className;
         }
+        */
 
         $collName = $this->getRefFKCollVarName($refFK);
 
@@ -3438,7 +3440,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * through the $className foreign key attribute.
      *
      * @param      $className \$l $className
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      */
     public function add".$this->getRefFKPhpNameAffix($refFK, $plural = false)."($className \$l)
     {
@@ -3686,7 +3688,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * Sets a single $className object as related to this object by a one-to-one relationship.
      *
      * @param      $className \$v $className
-     * @return     ".$this->getObjectClassname()." The current object (for fluent API support)
+     * @return     ".$this->getObjectClassname(true)." The current object (for fluent API support)
      * @throws     PropelException
      */
     public function set".$this->getRefFKPhpNameAffix($refFK, $plural = false)."($className \$v = null)
@@ -4925,7 +4927,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * objects.
      *
      * @param      boolean \$deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return     ".$this->getObjectClassname()." Clone of current object.
+     * @return     ".$this->getObjectClassname(true)." Clone of current object.
      * @throws     PropelException
      */
     public function copy(\$deepCopy = false)
@@ -4956,7 +4958,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object \$copyObj An object of ".$this->getObjectClassname()." (or compatible) type.
+     * @param      object \$copyObj An object of ".$this->getObjectClassname(true)." (or compatible) type.
      * @param      boolean \$deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean \$makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws     PropelException
