@@ -164,7 +164,9 @@ class QuickBuilder
 
         foreach (array('tablemap', 'peer', 'object', 'query', 'peerstub', 'objectstub', 'querystub') as $target) {
             $class = $this->getConfig()->getConfiguredBuilder($table, $target)->build();
-            $class = "\nnamespace\n{\n" . $class . "\n}\n";
+            if (false === strpos($class, 'namespace')) { //prevent nested namespace
+                $class = "\nnamespace\n{\n" . $class . "\n}\n";
+            }
             $script .= $this->fixNamespaceDeclarations($class);
         }
 
@@ -175,14 +177,18 @@ class QuickBuilder
                         $builder = $this->getConfig()->getConfiguredBuilder('queryinheritance', $target);
                         $builder->setChild($child);
                         $class = $builder->build();
-                        $class = "\nnamespace\n{\n" . $class . "\n}\n";
+                        if (false === strpos($class, 'namespace')) { //prevent nested namespace
+                            $class = "\nnamespace\n{\n" . $class . "\n}\n";
+                        }
                         $script .= $this->fixNamespaceDeclarations($class);
                     }
                     foreach (array('objectmultiextend', 'queryinheritancestub') as $target) {
                         $builder = $this->getConfig()->getConfiguredBuilder($table, $target);
                         $builder->setChild($child);
                         $class = $builder->build();
-                        $class = "\nnamespace\n{\n" . $class . "\n}\n";
+                        if (false === strpos($class, 'namespace')) {
+                            $class = "\nnamespace\n{\n" . $class . "\n}\n";
+                        }
                         $script .= $this->fixNamespaceDeclarations($class);
                     }
                 }
@@ -191,7 +197,9 @@ class QuickBuilder
 
         if ($table->getInterface()) {
             $interface = $this->getConfig()->getConfiguredBuilder('interface', $target)->build();
-            $interface = "\nnamespace\n{\n" . $interface . "\n}\n";
+            if (false === strpos($class, 'namespace')) {
+                $interface = "\nnamespace\n{\n" . $interface . "\n}\n";
+            }
             $script .= $this->fixNamespaceDeclarations($interface);
         }
 
@@ -199,7 +207,9 @@ class QuickBuilder
             foreach ($table->getAdditionalBuilders() as $builderClass) {
                 $builder = new $builderClass($table);
                 $class = $builder->build();
-                $class = "\nnamespace\n{\n" . $class . "\n}\n";
+                if (false === strpos($class, 'namespace')) {
+                    $class = "\nnamespace\n{\n" . $class . "\n}\n";
+                }
                 $script .= $this->fixNamespaceDeclarations($class);
             }
         }
