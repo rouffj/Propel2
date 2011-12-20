@@ -200,7 +200,7 @@ class ObjectBuilder extends AbstractObjectBuilder
         }
         $script .= "
  */
-abstract class ".$this->getClassname()." extends ".$parentClass." ";
+abstract class ".$this->getUnqualifiedClassname()." extends ".$parentClass." ";
 
         $interface = ClassTools::getInterface($table);
         if ($interface) {
@@ -323,7 +323,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
     protected function addClassClose(&$script)
     {
         $script .= "
-} // " . $this->getClassname() . "
+} // " . $this->getUnqualifiedClassname() . "
 ";
         $this->applyBehaviorModifier('objectFilter', $script, "");
     }
@@ -590,7 +590,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
     protected function addConstructorComment(&$script) {
         $script .= "
     /**
-     * Initializes internal state of ".$this->getClassname()." object.
+     * Initializes internal state of ".$this->getQualifiedClassname()." object.
      * @see        applyDefaults()
      */";
     }
@@ -2093,7 +2093,7 @@ abstract class ".$this->getClassname()." extends ".$parentClass." ";
         $fks = $this->getTable()->getForeignKeys();
         $referrers = $this->getTable()->getReferrers();
         $hasFks = count($fks) > 0 || count($referrers) > 0;
-        $objectClassName = $this->getClassname();
+        $objectClassName = $this->getUnqualifiedClassname();
         $pkGetter = $this->getTable()->hasCompositePrimaryKey() ? 'serialize($this->getPrimaryKey())' : '$this->getPrimaryKey()';
         $script .= "
     /**

@@ -34,7 +34,7 @@ class MultiExtendObjectBuilder extends AbstractObjectBuilder
      */
     public function getUnprefixedClassname()
     {
-        return $this->getChild()->getClassname();
+        return $this->getChild()->getClassName();
     }
 
     /**
@@ -120,8 +120,6 @@ class MultiExtendObjectBuilder extends AbstractObjectBuilder
         $tableName = $table->getName();
         $tableDesc = $table->getDescription();
 
-        $baseClassname = $this->getObjectBuilder()->getClassname();
-
         $script .= "
 
 /**
@@ -143,7 +141,7 @@ class MultiExtendObjectBuilder extends AbstractObjectBuilder
  * long as it does not already exist in the output directory.
  *
  */
-class ".$this->getClassname()." extends ".$this->getParentClassname()." {
+class ".$this->getUnqualifiedClassname()." extends ".$this->getParentClassname()." {
 ";
     }
 
@@ -166,7 +164,7 @@ class ".$this->getClassname()." extends ".$this->getParentClassname()." {
 
         $script .= "
     /**
-     * Constructs a new ".$this->getChild()->getClassname()." class, setting the ".$col->getName()." column to ".$this->getPeerClassname()."::$const.
+     * Constructs a new ".$this->getChild()->getClassName()." class, setting the ".$col->getName()." column to ".$this->getPeerClassname()."::$const.
      */
     public function __construct()
     {";
@@ -184,7 +182,7 @@ class ".$this->getClassname()." extends ".$this->getParentClassname()." {
     protected function addClassClose(&$script)
     {
         $script .= "
-} // " . $this->getClassname() . "
+} // " . $this->getUnqualifiedClassname() . "
 ";
     }
 
